@@ -1,4 +1,8 @@
-all: solarpass
+CXX = g++
+CXXFLAGS = -std=c++17 -Wall
+TARGET = solarpass
 
-solarpass: main.cpp
-	g++ -Wall main.cpp -o solarpass
+all: $(TARGET)
+
+$(TARGET): main.cpp
+	$(CXX) $(CXXFLAGS) main.cpp -o $(TARGET) -lsodium
