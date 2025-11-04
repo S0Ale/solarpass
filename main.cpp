@@ -1,7 +1,5 @@
 #include <iostream> 
 #include <sstream>
-#include <thread>
-#include <chrono>
 #include <string>
 #include <unistd.h>
 #include <sodium.h>
@@ -11,6 +9,7 @@ using namespace std;
 const char* gCMDNAME = nullptr;
 const unsigned int MAX_LEN{1024};
 
+// Print helper message
 void printUsage(const char* name){
 	cout << "Usage: " << name << " [-hp] <length>" << endl << endl;
 	cout << "Description:" << endl;
@@ -24,11 +23,30 @@ void printUsage(const char* name){
 	exit(0);
 }
 
+// Check if we are on Wayland
+bool isWayland() {
+    const char* wayland = std::getenv("WAYLAND_DISPLAY");
+    return (wayland && *wayland);
+}
+
+// Exit from the program with an error message
 void exitWithError(const char* msg){
 	cerr << gCMDNAME << ": error: " << msg << endl;
 	exit(1);
 }
 
+// Clipboard method
+bool copyToClip(const string& text){
+	if(isWayland()){
+		string cmd = "printf %s \"" + text + "\" | wl-copy";
+		int res = system(cmd.c_str());
+		return res == 0;
+	}
+
+	return clip::set_text(text);
+}
+
+// Get random character from a pool
 char getRandomCharacter() {
     const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     unsigned char index;
@@ -36,6 +54,7 @@ char getRandomCharacter() {
     return characters[index % characters.length()];
 }
 
+// Pawword generation function
 string generatePsw(const unsigned int len){
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
@@ -44,9 +63,8 @@ string generatePsw(const unsigned int len){
 
 	string psw(len, ' ');
 	unsigned int i = 0;
-	for(; i < len; i++){
+	for(; i < len; i++)
 		psw[i] = getRandomCharacter();
-	}
 
 	return psw;
 }
@@ -87,11 +105,10 @@ int main(int argc, char *argv[]){
 	if(printToStd)
 		cout << newPsw << endl;
 	else{
-		if(clip::set_text(newPsw)){
+		if(copyToClip(newPsw))
 			cout << "Password copied to clipboard" << endl;
-		}else{
-			exitWithError("failed to access clipboard");
-		}
+		else
+			exitWithError("failed to copy to clipboard");
 	}
 
 	return 0;
