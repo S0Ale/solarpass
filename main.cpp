@@ -39,6 +39,8 @@ char getRandomCharacter() {
 string generatePsw(const unsigned int len){
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
+	if(len > MAX_LEN)
+		exitWithError("Password cannot be longer than 1024 characters.");
 
 	string psw(len, ' ');
 	unsigned int i = 0;
@@ -80,9 +82,6 @@ int main(int argc, char *argv[]){
 	if (!(stream >> len) || !(stream.eof())){ 
 		exitWithError("invalid length");
 	}
-
-	if(len > MAX_LEN)
-		exitWithError("Password cannot be longer than 1024 characters.");
 
 	string newPsw = generatePsw(len);
 	if(printToStd)
