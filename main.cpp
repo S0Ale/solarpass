@@ -1,5 +1,7 @@
 #include <iostream> 
 #include <sstream>
+#include <thread>
+#include <chrono>
 #include <string>
 #include <unistd.h>
 #include <sodium.h>
@@ -69,26 +71,28 @@ int main(int argc, char *argv[]){
 		printUsage(argv[0]);
 		exit(0);
 	}
-	if(optind >= argc){
+	if(optind >= argc)
 		exitWithError("No length specified");
-		exit(1);
-	}
+
 	char* arg = argv[optind];
 	unsigned int len{};
 	stringstream stream(arg);
 	if (!(stream >> len) || !(stream.eof())){ 
 		exitWithError("invalid length");
-        return 1;
 	}
 
 	if(len > MAX_LEN)
 		exitWithError("Password cannot be longer than 1024 characters.");
+
 	string newPsw = generatePsw(len);
 	if(printToStd)
 		cout << newPsw << endl;
 	else{
-		cout << "Password copied to clipboard" << endl;
-		//use clip
+		if(clip::set_text(newPsw)){
+			cout << "Password copied to clipboard" << endl;
+		}else{
+			exitWithError("failed to access clipboard");
+		}
 	}
 
 	return 0;
