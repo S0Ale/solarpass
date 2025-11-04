@@ -3,6 +3,7 @@
 #include <string>
 #include <unistd.h>
 #include <sodium.h>
+#include "clip/clip.h" 
 using namespace std;
 
 const char* gCMDNAME = nullptr;
@@ -72,8 +73,7 @@ int main(int argc, char *argv[]){
 		exitWithError("No length specified");
 		exit(1);
 	}
-
-	char* arg = argv[2];
+	char* arg = argv[optind];
 	unsigned int len{};
 	stringstream stream(arg);
 	if (!(stream >> len) || !(stream.eof())){ 
@@ -88,7 +88,7 @@ int main(int argc, char *argv[]){
 		cout << newPsw << endl;
 	else{
 		cout << "Password copied to clipboard" << endl;
-		// TODO
+		//use clip
 	}
 
 	return 0;

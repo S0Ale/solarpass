@@ -38,6 +38,11 @@
 *.app
 # Custom
 solarpass
+/build/
+*/build/
+CMakeFiles/
+cmake_install.cmake
+Makefile
 
 # debug information files
 *.dwo
