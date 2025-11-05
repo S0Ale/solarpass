@@ -27,46 +27,54 @@ void printUsage(const char* name){
 	exit(0);
 }
 
+unsigned int getRandIndex(const unsigned int len){
+    unsigned int index;
+	randombytes_buf(&index, sizeof(unsigned int)); 
+	return index % len;
+}
+
 char getRandChar(string basePool) {
     unsigned char index;
 	randombytes_buf(&index, 1); 
     return basePool[index % basePool.length()];
 }
 
-// Get random character from a pool
-char getRandChar(string basePool, unsigned char& i) {
-    unsigned char index;
-	randombytes_buf(&index, 1); 
-	i = index % basePool.length();
-    return basePool[i];
-}
-
 // Pawword generation function
 string generatePsw(const unsigned int len, string extra){
-    string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
 	if(len > MAX_LEN)
 		exitWithError("Password cannot be longer than 1024 characters.");
-	vector<char> bytes(len, 0);
+
+	string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	string psw(len, ' ');
 
-	// At least one number
 	string numbers = "0123456789";
-	unsigned char idx{0};
-	char newCh = getRandChar(numbers, idx);
-	psw[idx] = newCh;
+	string lower   = "abcdefghijklmnopqrstuvwxyz";
+	string upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	string special = "-_!=+";
 
-	// At least one upper case
-	string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	newCh = getRandChar(upper, idx);
-	psw[idx] = newCh;
+	vector<unsigned int> indices(len);
+	for (unsigned int i = 0; i < len; ++i)
+		indices[i] = i;
+
+	// Shuffle
+	for (unsigned int i = 0; i < len; ++i) {
+		unsigned int j;
+		randombytes_buf(&j, sizeof(unsigned int));
+		j %= len;
+		swap(indices[i], indices[j]);
+	}
+
+    psw[indices[0]] = getRandChar(numbers);
+    psw[indices[1]] = getRandChar(lower);
+    psw[indices[2]] = getRandChar(upper);
+    psw[indices[3]] = getRandChar(special);
 	
 	unsigned int i = 0;
 	for(; i < len; i++)
 		if(psw[i] == ' ')
-			psw[i] = getRandChar(base + extra);
+			psw[i] = getRandChar(base + special + extra);
 
 	return psw;
 }
@@ -105,7 +113,11 @@ int main(int argc, char *argv[]){
 	}
 
 	// This throws an error, because second arg can be null
-	string extra(argv[optind + 1]);
+	string extra;
+	if(argv[optind + 1])
+		extra = argv[optind + 1];
+	else extra = "";
+
 	string newPsw = generatePsw(len, extra);
 	if(printToStd)
 		cout << newPsw << endl;
