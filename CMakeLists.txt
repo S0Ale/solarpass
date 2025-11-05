@@ -12,11 +12,18 @@ set(CLIP_TESTS OFF CACHE BOOL "Compile clip tests")
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SODIUM REQUIRED libsodium)
 
+add_library(utils
+	include/utils.cpp
+)
+target_include_directories(utils PUBLIC include)
+
 add_executable(solarpass)
 target_sources(solarpass
 	PRIVATE
 		main.cpp
 )
+
+target_link_libraries(solarpass PRIVATE utils)
 
 target_include_directories(solarpass PRIVATE
     ${SODIUM_INCLUDE_DIRS}

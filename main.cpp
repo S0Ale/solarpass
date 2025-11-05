@@ -3,10 +3,9 @@
 #include <string>
 #include <unistd.h>
 #include <sodium.h>
-#include "clip/clip.h" 
+#include "include/utils.h"
 using namespace std;
 
-const char* gCMDNAME = nullptr;
 const unsigned int MAX_LEN{1024};
 
 // Print helper message
@@ -21,29 +20,6 @@ void printUsage(const char* name){
 	cout << endl;
 
 	exit(0);
-}
-
-// Check if we are on Wayland
-bool isWayland() {
-    const char* wayland = std::getenv("WAYLAND_DISPLAY");
-    return (wayland && *wayland);
-}
-
-// Exit from the program with an error message
-void exitWithError(const char* msg){
-	cerr << gCMDNAME << ": error: " << msg << endl;
-	exit(1);
-}
-
-// Clipboard method
-bool copyToClip(const string& text){
-	if(isWayland()){
-		string cmd = "printf %s \"" + text + "\" | wl-copy";
-		int res = system(cmd.c_str());
-		return res == 0;
-	}
-
-	return clip::set_text(text);
 }
 
 // Get random character from a pool
@@ -70,8 +46,6 @@ string generatePsw(const unsigned int len){
 }
 
 int main(int argc, char *argv[]){
-	gCMDNAME = argv[0];
-
 	int opt;
 	bool printToStd{false};
 
