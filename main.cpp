@@ -1,5 +1,8 @@
+#include <getopt.h>
 #include <iostream> 
+#include <sodium/randombytes.h>
 #include <sstream>
+#include <vector>
 #include <string>
 #include <unistd.h>
 #include <sodium.h>
@@ -10,38 +13,60 @@ const unsigned int MAX_LEN{1024};
 
 // Print helper message
 void printUsage(const char* name){
-	cout << "Usage: " << name << " [-hpe] <length>" << endl << endl;
+	cout << "Usage: " << name << " [-hpse] <length> [extra_symbols]" << endl << endl;
 	cout << "Description:" << endl;
 	cout << " Randomly generate a new password with the specified length." << endl;
 	cout << " It copies the result to the clipboard as default." << endl << endl;
 	cout << "Options:" << endl;
 	cout << " -h		Display the help message." << endl;
 	cout << " -p		Print password to terminal." << endl;
-	cout << " -e		Add extra simbols to the password generation process" << endl;
+	cout << " -s		Use common symbols for the password generation." << endl;
+	//cout << " -e		Add a custom set of simbols for the password generation." << endl;
 	cout << endl;
 
 	exit(0);
 }
 
-// Get random character from a pool
-char getRandomCharacter() {
-    const std::string characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+char getRandChar(string basePool) {
     unsigned char index;
 	randombytes_buf(&index, 1); 
-    return characters[index % characters.length()];
+    return basePool[index % basePool.length()];
+}
+
+// Get random character from a pool
+char getRandChar(string basePool, unsigned char& i) {
+    unsigned char index;
+	randombytes_buf(&index, 1); 
+	i = index % basePool.length();
+    return basePool[i];
 }
 
 // Pawword generation function
-string generatePsw(const unsigned int len){
+string generatePsw(const unsigned int len, string extra){
+    string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
 	if(len > MAX_LEN)
 		exitWithError("Password cannot be longer than 1024 characters.");
-
+	vector<char> bytes(len, 0);
 	string psw(len, ' ');
+
+	// At least one number
+	string numbers = "0123456789";
+	unsigned char idx{0};
+	char newCh = getRandChar(numbers, idx);
+	psw[idx] = newCh;
+
+	// At least one upper case
+	string upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	newCh = getRandChar(upper, idx);
+	psw[idx] = newCh;
+	
 	unsigned int i = 0;
 	for(; i < len; i++)
-		psw[i] = getRandomCharacter();
+		if(psw[i] == ' ')
+			psw[i] = getRandChar(base + extra);
 
 	return psw;
 }
@@ -79,7 +104,9 @@ int main(int argc, char *argv[]){
 		exitWithError("invalid length");
 	}
 
-	string newPsw = generatePsw(len);
+	// This throws an error, because second arg can be null
+	string extra(argv[optind + 1]);
+	string newPsw = generatePsw(len, extra);
 	if(printToStd)
 		cout << newPsw << endl;
 	else{
