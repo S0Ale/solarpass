@@ -10,13 +10,14 @@ const unsigned int MAX_LEN{1024};
 
 // Print helper message
 void printUsage(const char* name){
-	cout << "Usage: " << name << " [-hp] <length>" << endl << endl;
+	cout << "Usage: " << name << " [-hpe] <length>" << endl << endl;
 	cout << "Description:" << endl;
 	cout << " Randomly generate a new password with the specified length." << endl;
 	cout << " It copies the result to the clipboard as default." << endl << endl;
 	cout << "Options:" << endl;
-	cout << " -p		Print password to terminal." << endl;
 	cout << " -h		Display the help message." << endl;
+	cout << " -p		Print password to terminal." << endl;
+	cout << " -e		Add extra simbols to the password generation process" << endl;
 	cout << endl;
 
 	exit(0);
@@ -45,6 +46,7 @@ string generatePsw(const unsigned int len){
 	return psw;
 }
 
+// TODO: enforce category policies, add options for common symbols and to insert a custom set
 int main(int argc, char *argv[]){
 	int opt;
 	bool printToStd{false};
@@ -57,6 +59,8 @@ int main(int argc, char *argv[]){
 			case 'p':
 				std::cout << "Printing the new password to stdin..." << endl;
 				printToStd = true;
+				break;
+			case 'e':
 				break;
 		}
 	}
