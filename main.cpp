@@ -1,11 +1,10 @@
 #include <getopt.h>
 #include <iostream> 
-#include <sodium/randombytes.h>
-#include <sodium/utils.h>
 #include <sstream>
 #include <vector>
 #include <string>
 #include <unistd.h>
+#include <sodium/randombytes.h>
 #include "include/utils.h"
 using namespace std;
 

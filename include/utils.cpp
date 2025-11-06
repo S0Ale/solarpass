@@ -1,3 +1,4 @@
+#include <cstdio>
 #include <iostream> 
 #include <string>
 #include <chrono>
@@ -40,9 +41,12 @@ bool copyToClip(const std::string& text){
 // Wait 10 seconds and then clear clipboard
 void waitForClear(){
 	for(unsigned int i = 10; i > 0; i--){
-		std::cout << "Clearing clipboard in " << i << "s..." << std::endl; 
+		std::cout << "\r" << "Clearing clipboard in " << i << "s..."; 
 		std::this_thread::sleep_for(std::chrono::seconds(1));
+		std::fflush(stdout);
 	}
+	std::cout << "\r" << "";
+	std::fflush(stdout);
 
 	if(isWayland()){
 		std::string cmd = "wl-copy --clear";
