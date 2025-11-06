@@ -1,11 +1,11 @@
 #include <getopt.h>
 #include <iostream> 
 #include <sodium/randombytes.h>
+#include <sodium/utils.h>
 #include <sstream>
 #include <vector>
 #include <string>
 #include <unistd.h>
-#include <sodium.h>
 #include "include/utils.h"
 using namespace std;
 
@@ -13,30 +13,16 @@ const unsigned int MAX_LEN{1024};
 
 // Print helper message
 void printUsage(const char* name){
-	cout << "Usage: " << name << " [-hpse] <length> [extra_symbols]" << endl << endl;
+	cout << "Usage: " << name << " [-hp] <length> [extra_symbols]" << endl << endl;
 	cout << "Description:" << endl;
 	cout << " Randomly generate a new password with the specified length." << endl;
 	cout << " It copies the result to the clipboard as default." << endl << endl;
 	cout << "Options:" << endl;
 	cout << " -h		Display the help message." << endl;
 	cout << " -p		Print password to terminal." << endl;
-	cout << " -s		Use common symbols for the password generation." << endl;
-	//cout << " -e		Add a custom set of simbols for the password generation." << endl;
 	cout << endl;
 
 	exit(0);
-}
-
-unsigned int getRandIndex(const unsigned int len){
-    unsigned int index;
-	randombytes_buf(&index, sizeof(unsigned int)); 
-	return index % len;
-}
-
-char getRandChar(string basePool) {
-    unsigned char index;
-	randombytes_buf(&index, 1); 
-    return basePool[index % basePool.length()];
 }
 
 // Pawword generation function
@@ -79,7 +65,6 @@ string generatePsw(const unsigned int len, string extra){
 	return psw;
 }
 
-// TODO: enforce category policies, add options for common symbols and to insert a custom set
 int main(int argc, char *argv[]){
 	int opt;
 	bool printToStd{false};
@@ -112,7 +97,6 @@ int main(int argc, char *argv[]){
 		exitWithError("invalid length");
 	}
 
-	// This throws an error, because second arg can be null
 	string extra;
 	if(argv[optind + 1])
 		extra = argv[optind + 1];
@@ -122,11 +106,13 @@ int main(int argc, char *argv[]){
 	if(printToStd)
 		cout << newPsw << endl;
 	else{
-		if(copyToClip(newPsw))
+		if(copyToClip(newPsw)){
 			cout << "Password copied to clipboard" << endl;
-		else
+			waitForClear();
+		}else
 			exitWithError("failed to copy to clipboard");
 	}
+	pswCleanup(newPsw);
 
 	return 0;
 }
