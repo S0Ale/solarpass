@@ -8,7 +8,7 @@
 #include "include/utils.h"
 using namespace std;
 
-const unsigned int MAX_LEN{1024};
+const int MAX_LEN{1024};
 
 // Print helper message
 void printUsage(const char* name){
@@ -25,7 +25,7 @@ void printUsage(const char* name){
 }
 
 // Pawword generation function
-string generatePsw(const unsigned int len, string extra){
+string generatePsw(const int len, string extra){
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
 	if(len > MAX_LEN)
@@ -40,11 +40,11 @@ string generatePsw(const unsigned int len, string extra){
 	string special = "-_!=+";
 
 	vector<unsigned int> indices(len);
-	for (unsigned int i = 0; i < len; ++i)
+	for (int i = 0; i < len; ++i)
 		indices[i] = i;
 
 	// Shuffle
-	for (unsigned int i = 0; i < len; ++i) {
+	for (int i = 0; i < len; ++i) {
 		unsigned int j;
 		randombytes_buf(&j, sizeof(unsigned int));
 		j %= len;
@@ -56,8 +56,7 @@ string generatePsw(const unsigned int len, string extra){
     psw[indices[2]] = getRandChar(upper);
     psw[indices[3]] = getRandChar(special);
 	
-	unsigned int i = 0;
-	for(; i < len; i++)
+	for(int i = 0; i < len; i++)
 		if(psw[i] == ' ')
 			psw[i] = getRandChar(base + special + extra);
 
@@ -90,7 +89,7 @@ int main(int argc, char *argv[]){
 		exitWithError("No length specified");
 
 	char* arg = argv[optind];
-	unsigned int len{};
+	int len{};
 	stringstream stream(arg);
 	if (!(stream >> len) || !(stream.eof())){ 
 		exitWithError("invalid length");
