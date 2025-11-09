@@ -24,7 +24,7 @@ void printUsage(const char* name){
 	exit(0);
 }
 
-// Pawword generation function
+// Password generation function
 string generatePsw(const int len, string extra){
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
