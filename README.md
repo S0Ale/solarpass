@@ -22,4 +22,4 @@ Execute the `install` script:
 cmake --build build
 ```
 
-You will find the executable inside the `build` folder.
+You will find the `solarpass` executable inside the `build` folder.
