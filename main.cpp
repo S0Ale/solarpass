@@ -8,6 +8,7 @@
 #include "include/utils.h"
 using namespace std;
 
+const char MIN_LEN{8};
 const int MAX_LEN{1024};
 
 // Print helper message
@@ -28,6 +29,8 @@ void printUsage(const char* name){
 string generatePsw(const int len, string extra){
 	if(len <= 0)
 		exitWithError("Length cannot be zero or negative.");
+	if(len < MIN_LEN)
+		exitWithError("Length cannot be less than 8 characters.");
 	if(len > MAX_LEN)
 		exitWithError("Password cannot be longer than 1024 characters.");
 
