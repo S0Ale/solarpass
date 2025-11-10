@@ -11,60 +11,8 @@ using namespace std;
 const char MIN_LEN{8};
 const int MAX_LEN{1024};
 
-// Print helper message
-void printUsage(const char* name){
-	cout << "Usage: " << name << " [-hp] <length> [extra_symbols]" << endl << endl;
-	cout << "Description:" << endl;
-	cout << " Randomly generate a new password with the specified length." << endl;
-	cout << " It copies the result to the clipboard as default." << endl << endl;
-	cout << "Options:" << endl;
-	cout << " -h		Display the help message." << endl;
-	cout << " -p		Print password to terminal." << endl;
-	cout << endl;
-
-	exit(0);
-}
-
-// Password generation function
-string generatePsw(const int len, string extra){
-	if(len <= 0)
-		exitWithError("Length cannot be zero or negative.");
-	if(len < MIN_LEN)
-		exitWithError("Length cannot be less than 8 characters.");
-	if(len > MAX_LEN)
-		exitWithError("Password cannot be longer than 1024 characters.");
-
-	string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	string psw(len, ' ');
-
-	string numbers = "0123456789";
-	string lower   = "abcdefghijklmnopqrstuvwxyz";
-	string upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	string special = "-_!=+";
-
-	vector<unsigned int> indices(len);
-	for (int i = 0; i < len; ++i)
-		indices[i] = i;
-
-	// Shuffle
-	for (int i = 0; i < len; ++i) {
-		unsigned int j;
-		randombytes_buf(&j, sizeof(unsigned int));
-		j %= len;
-		swap(indices[i], indices[j]);
-	}
-
-    psw[indices[0]] = getRandChar(numbers);
-    psw[indices[1]] = getRandChar(lower);
-    psw[indices[2]] = getRandChar(upper);
-    psw[indices[3]] = getRandChar(special);
-	
-	for(int i = 0; i < len; i++)
-		if(psw[i] == ' ')
-			psw[i] = getRandChar(base + special + extra);
-
-	return psw;
-}
+void printUsage(const char* name);
+string generatePsw(const int len, string extra);
 
 int main(int argc, char *argv[]){
 	if(sodium_init() < 0){
@@ -119,4 +67,59 @@ int main(int argc, char *argv[]){
 	pswCleanup(newPsw);
 
 	return 0;
+}
+
+// Print helper message
+void printUsage(const char* name){
+	cout << "Usage: " << name << " [-hp] <length> [extra_symbols]" << endl << endl;
+	cout << "Description:" << endl;
+	cout << " Randomly generate a new password with the specified length." << endl;
+	cout << " It copies the result to the clipboard as default." << endl << endl;
+	cout << "Options:" << endl;
+	cout << " -h		Display the help message." << endl;
+	cout << " -p		Print password to terminal." << endl;
+	cout << endl;
+
+	exit(0);
+}
+
+// Pawword generation function
+string generatePsw(const int len, string extra){
+	if(len <= 0)
+		exitWithError("Length cannot be zero or negative.");
+	if(len < MIN_LEN)
+		exitWithError("Length cannot be less than 8 characters.");
+	if(len > MAX_LEN)
+		exitWithError("Password cannot be longer than 1024 characters.");
+
+	string base = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	string psw(len, ' ');
+
+	string numbers = "0123456789";
+	string lower   = "abcdefghijklmnopqrstuvwxyz";
+	string upper   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	string special = "-_!=+";
+
+	vector<unsigned int> indices(len);
+	for (int i = 0; i < len; ++i)
+		indices[i] = i;
+
+	// Shuffle
+	for (int i = 0; i < len; ++i) {
+		unsigned int j;
+		randombytes_buf(&j, sizeof(unsigned int));
+		j %= len;
+		swap(indices[i], indices[j]);
+	}
+
+    psw[indices[0]] = getRandChar(numbers);
+    psw[indices[1]] = getRandChar(lower);
+    psw[indices[2]] = getRandChar(upper);
+    psw[indices[3]] = getRandChar(special);
+	
+	for(int i = 0; i < len; i++)
+		if(psw[i] == ' ')
+			psw[i] = getRandChar(base + special + extra);
+
+	return psw;
 }
