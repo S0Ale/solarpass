@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 #include <unistd.h>
-#include <sodium/randombytes.h>
+#include <sodium.h>
 #include "include/utils.h"
 using namespace std;
 
@@ -67,6 +67,9 @@ string generatePsw(const int len, string extra){
 }
 
 int main(int argc, char *argv[]){
+	if(sodium_init() < 0){
+		exitWithError("Libsodium library not initialized");
+	}
 	int opt;
 	bool printToStd{false};
 
