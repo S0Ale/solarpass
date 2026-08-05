@@ -46,3 +46,5 @@ Makefile
 
 # debug information files
 *.dwo
+
+tmp/
