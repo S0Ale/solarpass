@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <getopt.h>
 #include <iostream> 
 #include <sstream>
@@ -11,7 +12,7 @@ using namespace std;
 const char MIN_LEN{8};
 const int MAX_LEN{1024};
 
-void printUsage(const char* name);
+void printHelp(const char* name);
 string generatePsw(const int len, string extra);
 
 int main(int argc, char *argv[]){
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]){
 	while((opt = getopt(argc, argv, "hp")) != -1){
 		switch(opt){
 			case 'h':
-				printUsage(argv[0]);	
+				printHelp(argv[0]);	
 				exit(0);
 			case 'p':
 				std::cout << "Printing the new password to stdin..." << endl;
@@ -36,7 +37,7 @@ int main(int argc, char *argv[]){
 	}
 
 	if(argc <= 1){
-		printUsage(argv[0]);
+		printHelp(argv[0]);
 		exit(0);
 	}
 	if(optind >= argc)
@@ -70,7 +71,7 @@ int main(int argc, char *argv[]){
 }
 
 // Print helper message
-void printUsage(const char* name){
+void printHelp(const char* name){
 	cout << "Usage: " << name << " [-hp] <length> [extra_symbols]" << endl << endl;
 	cout << "Description:" << endl;
 	cout << " Randomly generate a new password with the specified length." << endl;
